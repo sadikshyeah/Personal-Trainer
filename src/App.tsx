@@ -1,10 +1,11 @@
 
 import { useEffect, useState } from 'react'
 import './App.css'
-import CustomerList from './components/CustomerList.tsx'
-import TrainingList from './components/TrainingList.tsx'
-import { fetchCustomers, fetchTrainings } from './trainerapi.ts'
-import type { Customer, Training } from './types'
+import CustomerList from './components/CustomerList'
+import TrainingList from './components/TrainingList'
+import { addCustomer, deleteCustomer, fetchCustomers, updateCustomer } from './customerapi'
+import { addTraining, deleteTraining, fetchTrainings } from './trainingapi'
+import type { Customer, NewCustomer, NewTraining, Training } from './types'
 import AppBar from '@mui/material/AppBar'
 import Box from '@mui/material/Box'
 import Container from '@mui/material/Container'
@@ -19,19 +20,51 @@ function App() {
   const [customers, setCustomers] = useState<Customer[]>([])
   const [trainings, setTrainings] = useState<Training[]>([])
 
+  const refreshData = async () => {
+    try {
+      const [customersData, trainingsData] = await Promise.all([fetchCustomers(), fetchTrainings()])
+      setCustomers(customersData)
+      setTrainings(trainingsData)
+    } catch (error) {
+      console.error('Failed to fetch customers or trainings', error)
+    }
+  }
+
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const [customersData, trainingsData] = await Promise.all([fetchCustomers(), fetchTrainings()])
+    Promise.all([fetchCustomers(), fetchTrainings()])
+      .then(([customersData, trainingsData]) => {
         setCustomers(customersData)
         setTrainings(trainingsData)
-      } catch (error) {
+      })
+      .catch((error) => {
         console.error('Failed to fetch customers or trainings', error)
-      }
-    }
-
-    fetchData()
+      })
   }, [])
+
+  const handleAddCustomer = async (customer: NewCustomer) => {
+    await addCustomer(customer)
+    await refreshData()
+  }
+
+  const handleUpdateCustomer = async (url: string, customer: NewCustomer) => {
+    await updateCustomer(url, customer)
+    await refreshData()
+  }
+
+  const handleDeleteCustomer = async (url: string) => {
+    await deleteCustomer(url)
+    await refreshData()
+  }
+
+  const handleAddTraining = async (training: NewTraining) => {
+    await addTraining(training)
+    await refreshData()
+  }
+
+  const handleDeleteTraining = async (url: string) => {
+    await deleteTraining(url)
+    await refreshData()
+  }
 
   return (
     <>
@@ -55,7 +88,21 @@ function App() {
         </Tabs>
 
         <Box>
-          {activePage === 'customers' ? <CustomerList customers={customers} /> : <TrainingList trainings={trainings} />}
+          {activePage === 'customers' ? (
+            <CustomerList
+              customers={customers}
+              handleAdd={handleAddCustomer}
+              handleUpdate={handleUpdateCustomer}
+              handleDelete={handleDeleteCustomer}
+            />
+          ) : (
+            <TrainingList
+              trainings={trainings}
+              customers={customers}
+              handleAdd={handleAddTraining}
+              handleDelete={handleDeleteTraining}
+            />
+          )}
         </Box>
       </Container>
     </>
