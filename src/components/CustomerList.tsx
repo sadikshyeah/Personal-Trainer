@@ -1,6 +1,7 @@
 
 import { useMemo, useState } from 'react'
 import DeleteIcon from '@mui/icons-material/Delete'
+import DownloadIcon from '@mui/icons-material/Download'
 import { Box, IconButton, Paper, Stack, TextField, Tooltip, Typography } from '@mui/material'
 import { DataGrid, type GridColDef, type GridRenderCellParams } from '@mui/x-data-grid'
 import AddCustomer from './AddCustomer'
@@ -40,6 +41,41 @@ function CustomerList({ customers, handleAdd, handleDelete, handleUpdate }: Cust
         () => filteredCustomers.map((customer, index) => ({ ...customer, id: `${customer.email}-${index}` })),
         [filteredCustomers],
     )
+
+    const handleExportCsv = () => {
+        const exportFields: Array<keyof Customer> = [
+            'firstname',
+            'lastname',
+            'streetaddress',
+            'postcode',
+            'city',
+            'email',
+            'phone',
+        ]
+
+        const escapeCsvValue = (value: string) => `"${value.replaceAll('"', '""')}"`
+
+        const headerRow = exportFields.join(',')
+        const dataRows = filteredCustomers.map((customer) =>
+            exportFields
+                .map((field) => {
+                    const value = customer[field]
+                    return escapeCsvValue(value == null ? '' : String(value))
+                })
+                .join(','),
+        )
+
+        const csvContent = [headerRow, ...dataRows].join('\n')
+        const csvBlob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' })
+        const csvUrl = window.URL.createObjectURL(csvBlob)
+        const link = document.createElement('a')
+        link.href = csvUrl
+        link.setAttribute('download', 'customers.csv')
+        document.body.appendChild(link)
+        link.click()
+        document.body.removeChild(link)
+        window.URL.revokeObjectURL(csvUrl)
+    }
 
     const columns: GridColDef[] = [
         { field: 'firstname', headerName: 'First Name', flex: 1, minWidth: 160 },
@@ -89,6 +125,11 @@ function CustomerList({ customers, handleAdd, handleDelete, handleUpdate }: Cust
             value={search}
             onChange={(event) => setSearch(event.target.value)}
           />
+          <Tooltip title="Export visible customers to CSV">
+            <IconButton color="primary" onClick={handleExportCsv}>
+              <DownloadIcon />
+            </IconButton>
+          </Tooltip>
           <AddCustomer handleAdd={handleAdd} />
         </Stack>
       </Box>

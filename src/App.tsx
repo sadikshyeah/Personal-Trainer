@@ -2,6 +2,7 @@
 import { useEffect, useState } from 'react'
 import './App.css'
 import CustomerList from './components/CustomerList'
+import TrainingCalendar from './components/TrainingCalendar'
 import TrainingList from './components/TrainingList'
 import { addCustomer, deleteCustomer, fetchCustomers, updateCustomer } from './customerapi'
 import { addTraining, deleteTraining, fetchTrainings } from './trainingapi'
@@ -16,7 +17,7 @@ import Toolbar from '@mui/material/Toolbar'
 import Typography from '@mui/material/Typography'
 
 function App() {
-  const [activePage, setActivePage] = useState<'customers' | 'trainings'>('customers')
+  const [activePage, setActivePage] = useState<'customers' | 'trainings' | 'calendar'>('customers')
   const [customers, setCustomers] = useState<Customer[]>([])
   const [trainings, setTrainings] = useState<Training[]>([])
 
@@ -80,11 +81,12 @@ function App() {
       <Container maxWidth="md" sx={{ mt: 4 }}>
         <Tabs
           value={activePage}
-          onChange={(_event, nextValue: 'customers' | 'trainings') => setActivePage(nextValue)}
+          onChange={(_event, nextValue: 'customers' | 'trainings' | 'calendar') => setActivePage(nextValue)}
           sx={{ mb: 2 }}
         >
           <Tab label="Customers" value="customers" />
           <Tab label="Trainings" value="trainings" />
+          <Tab label="Calendar" value="calendar" />
         </Tabs>
 
         <Box>
@@ -95,13 +97,15 @@ function App() {
               handleUpdate={handleUpdateCustomer}
               handleDelete={handleDeleteCustomer}
             />
-          ) : (
+          ) : activePage === 'trainings' ? (
             <TrainingList
               trainings={trainings}
               customers={customers}
               handleAdd={handleAddTraining}
               handleDelete={handleDeleteTraining}
             />
+          ) : (
+            <TrainingCalendar trainings={trainings} />
           )}
         </Box>
       </Container>
