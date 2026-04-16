@@ -4,6 +4,7 @@ import './App.css'
 import CustomerList from './components/CustomerList'
 import TrainingCalendar from './components/TrainingCalendar'
 import TrainingList from './components/TrainingList'
+import TrainingStatistics from './components/TrainingStatistics'
 import { addCustomer, deleteCustomer, fetchCustomers, updateCustomer } from './customerapi'
 import { addTraining, deleteTraining, fetchTrainings } from './trainingapi'
 import type { Customer, NewCustomer, NewTraining, Training } from './types'
@@ -17,7 +18,7 @@ import Toolbar from '@mui/material/Toolbar'
 import Typography from '@mui/material/Typography'
 
 function App() {
-  const [activePage, setActivePage] = useState<'customers' | 'trainings' | 'calendar'>('customers')
+  const [activePage, setActivePage] = useState<'customers' | 'trainings' | 'calendar' | 'statistics'>('customers')
   const [customers, setCustomers] = useState<Customer[]>([])
   const [trainings, setTrainings] = useState<Training[]>([])
 
@@ -81,12 +82,13 @@ function App() {
       <Container maxWidth="md" sx={{ mt: 4 }}>
         <Tabs
           value={activePage}
-          onChange={(_event, nextValue: 'customers' | 'trainings' | 'calendar') => setActivePage(nextValue)}
+          onChange={(_event, nextValue: 'customers' | 'trainings' | 'calendar' | 'statistics') => setActivePage(nextValue)}
           sx={{ mb: 2 }}
         >
           <Tab label="Customers" value="customers" />
           <Tab label="Trainings" value="trainings" />
           <Tab label="Calendar" value="calendar" />
+          <Tab label="Statistics" value="statistics" />
         </Tabs>
 
         <Box>
@@ -104,8 +106,10 @@ function App() {
               handleAdd={handleAddTraining}
               handleDelete={handleDeleteTraining}
             />
-          ) : (
+          ) : activePage === 'calendar' ? (
             <TrainingCalendar trainings={trainings} />
+          ) : (
+            <TrainingStatistics trainings={trainings} />
           )}
         </Box>
       </Container>
