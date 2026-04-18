@@ -6,16 +6,18 @@ import { Box, IconButton, Paper, Stack, TextField, Tooltip, Typography } from '@
 import { DataGrid, type GridColDef, type GridRenderCellParams } from '@mui/x-data-grid'
 import AddTraining from './AddTraining'
 import ConfirmDialog from './ConfirmDialog'
+import EditTraining from './EditTraining'
 import type { Customer, NewTraining, Training } from '../types'
 
 type TrainingListProps = {
   trainings: Training[]
   customers: Customer[]
   handleAdd: (training: NewTraining) => void
+  handleUpdate: (url: string, training: NewTraining) => void
   handleDelete: (url: string) => void
 }
 
-function TrainingList({ trainings, customers, handleAdd, handleDelete }: TrainingListProps) {
+function TrainingList({ trainings, customers, handleAdd, handleUpdate, handleDelete }: TrainingListProps) {
   const [search, setSearch] = useState('')
   const [deleteUrl, setDeleteUrl] = useState('')
 
@@ -58,11 +60,25 @@ function TrainingList({ trainings, customers, handleAdd, handleDelete }: Trainin
     },
     { field: 'customerName', headerName: 'Customer', flex: 1.2, minWidth: 190 },
     {
-      field: 'actions',
-      headerName: '',
+      field: 'edit',
+      headerName: 'Edit',
       sortable: false,
       filterable: false,
-      minWidth: 100,
+      align: 'center',
+      headerAlign: 'center',
+      minWidth: 80,
+      renderCell: (params: GridRenderCellParams) => (
+        <EditTraining training={params.row as Training} customers={customers} handleUpdate={handleUpdate} />
+      ),
+    },
+    {
+      field: 'delete',
+      headerName: 'Delete',
+      sortable: false,
+      filterable: false,
+      align: 'center',
+      headerAlign: 'center',
+      minWidth: 90,
       renderCell: (params: GridRenderCellParams) => (
         <Tooltip title="Delete training">
           <IconButton color="error" size="small" onClick={() => setDeleteUrl((params.row as Training)._links?.self?.href ?? '')}>
