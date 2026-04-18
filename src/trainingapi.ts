@@ -98,6 +98,20 @@ export const addTraining = (training: NewTraining) => {
   })
 }
 
+export const updateTraining = (url: string, training: NewTraining) => {
+  return fetch(url, {
+    method: 'PUT',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(training),
+  }).then((response) => {
+    if (!response.ok) {
+      throw new Error('Error when updating training.')
+    }
+  })
+}
+
 export const deleteTraining = (url: string) => {
   return fetch(url, {
     method: 'DELETE',
