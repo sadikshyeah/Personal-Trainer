@@ -6,7 +6,7 @@ import TrainingCalendar from './components/TrainingCalendar'
 import TrainingList from './components/TrainingList'
 import TrainingStatistics from './components/TrainingStatistics'
 import { addCustomer, deleteCustomer, fetchCustomers, updateCustomer } from './customerapi'
-import { addTraining, deleteTraining, fetchTrainings } from './trainingapi'
+import { addTraining, deleteTraining, fetchTrainings, updateTraining } from './trainingapi'
 import type { Customer, NewCustomer, NewTraining, Training } from './types'
 import AppBar from '@mui/material/AppBar'
 import Box from '@mui/material/Box'
@@ -63,6 +63,11 @@ function App() {
     await refreshData()
   }
 
+  const handleUpdateTraining = async (url: string, training: NewTraining) => {
+    await updateTraining(url, training)
+    await refreshData()
+  }
+
   const handleDeleteTraining = async (url: string) => {
     await deleteTraining(url)
     await refreshData()
@@ -104,6 +109,7 @@ function App() {
               trainings={trainings}
               customers={customers}
               handleAdd={handleAddTraining}
+              handleUpdate={handleUpdateTraining}
               handleDelete={handleDeleteTraining}
             />
           ) : activePage === 'calendar' ? (
