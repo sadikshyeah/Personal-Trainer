@@ -1,6 +1,7 @@
 import { useEffect, useState, type ReactNode } from 'react'
 import './App.css'
 import CustomerList from './components/CustomerList'
+import MotivationOfDay from './components/MotivationOfDay'
 import TrainingCalendar from './components/TrainingCalendar'
 import TrainingList from './components/TrainingList'
 import TrainingStatistics from './components/TrainingStatistics'
@@ -146,6 +147,7 @@ function App() {
       </Drawer>
 
       <Container maxWidth="md" sx={{ mt: 4 }}>
+        <MotivationOfDay />
         <Box>
           {activePage === 'customers' ? (
             <CustomerList
