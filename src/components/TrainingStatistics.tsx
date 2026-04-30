@@ -50,7 +50,7 @@ function TrainingStatistics({ trainings }: TrainingStatisticsProps) {
   }, [trainings])
 
   return (
-    <Box>
+    <Box sx={{ maxWidth: 1200, mx: 'auto', width: '100%' }}>
       <Typography variant="h6" sx={{ mb: 2 }}>
         Training Statistics
       </Typography>
