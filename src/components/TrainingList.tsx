@@ -49,16 +49,24 @@ function TrainingList({ trainings, customers, handleAdd, handleUpdate, handleDel
   )
 
   const columns: GridColDef[] = [
-    { field: 'activity', headerName: 'Activity', flex: 1, minWidth: 150 },
-    { field: 'duration', headerName: 'Duration (min)', type: 'number', flex: 1, minWidth: 130 },
+    { field: 'activity', headerName: 'Activity', flex: 1, minWidth: 140, maxWidth: 280 },
+    {
+      field: 'duration',
+      headerName: 'Duration (min)',
+      type: 'number',
+      width: 130,
+      flex: 0,
+      align: 'left',
+      headerAlign: 'left',
+    },
     {
       field: 'date',
       headerName: 'Date',
-      flex: 1.2,
-      minWidth: 180,
+      flex: 1,
+      minWidth: 170,
       valueFormatter: (value) => dayjs(value).format('DD.MM.YYYY HH:mm'),
     },
-    { field: 'customerName', headerName: 'Customer', flex: 1.2, minWidth: 190 },
+    { field: 'customerName', headerName: 'Customer', flex: 1, minWidth: 160 },
     {
       field: 'edit',
       headerName: 'Edit',
@@ -66,7 +74,8 @@ function TrainingList({ trainings, customers, handleAdd, handleUpdate, handleDel
       filterable: false,
       align: 'center',
       headerAlign: 'center',
-      minWidth: 80,
+      width: 80,
+      flex: 0,
       renderCell: (params: GridRenderCellParams) => (
         <EditTraining training={params.row as Training} customers={customers} handleUpdate={handleUpdate} />
       ),
@@ -78,7 +87,8 @@ function TrainingList({ trainings, customers, handleAdd, handleUpdate, handleDel
       filterable: false,
       align: 'center',
       headerAlign: 'center',
-      minWidth: 90,
+      width: 90,
+      flex: 0,
       renderCell: (params: GridRenderCellParams) => (
         <Tooltip title="Delete training">
           <IconButton color="error" size="small" onClick={() => setDeleteUrl((params.row as Training)._links?.self?.href ?? '')}>
@@ -90,10 +100,19 @@ function TrainingList({ trainings, customers, handleAdd, handleUpdate, handleDel
   ]
 
   return (
-    <Box>
-      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2, gap: 2 }}>
+    <Box sx={{ maxWidth: 1200, mx: 'auto', width: '100%' }}>
+      <Box
+        sx={{
+          display: 'flex',
+          flexWrap: 'wrap',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          mb: 2,
+          gap: 2,
+        }}
+      >
         <Typography variant="h6">Training List</Typography>
-        <Stack direction="row" gap={1}>
+        <Stack direction="row" gap={1} flexWrap="wrap" justifyContent="flex-end">
           <TextField
             size="small"
             label="Search trainings"
@@ -104,7 +123,7 @@ function TrainingList({ trainings, customers, handleAdd, handleUpdate, handleDel
         </Stack>
       </Box>
 
-      <Paper variant="outlined" sx={{ width: '100%' }}>
+      <Paper variant="outlined" sx={{ width: '100%', overflow: 'hidden' }}>
         <DataGrid
           rows={rows}
           columns={columns}
