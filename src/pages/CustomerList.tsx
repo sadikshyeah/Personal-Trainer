@@ -1,0 +1,172 @@
+import { useMemo, useState } from 'react'
+import DeleteIcon from '@mui/icons-material/Delete'
+import DownloadIcon from '@mui/icons-material/Download'
+import { Box, IconButton, Paper, Stack, TextField, Tooltip, Typography } from '@mui/material'
+import { DataGrid, type GridColDef, type GridRenderCellParams } from '@mui/x-data-grid'
+import AddCustomer from '../components/AddCustomer'
+import ConfirmDialog from '../components/ConfirmDialog'
+import EditCustomer from '../components/EditCustomer'
+import type { Customer, NewCustomer } from '../types'
+
+type CustomerListProps = {
+  customers: Customer[]
+  handleAdd: (customer: NewCustomer) => void
+  handleUpdate: (url: string, customer: NewCustomer) => void
+  handleDelete: (url: string) => void
+}
+
+function CustomerList({ customers, handleAdd, handleDelete, handleUpdate }: CustomerListProps) {
+  const [search, setSearch] = useState('')
+  const [deleteUrl, setDeleteUrl] = useState('')
+
+  const filteredCustomers = useMemo<Customer[]>(() => {
+    const query = search.trim().toLowerCase()
+    return customers.filter((customer) => {
+      if (!query) {
+        return true
+      }
+
+      return [customer.firstname, customer.lastname, customer.email, customer.phone]
+        .join(' ')
+        .toLowerCase()
+        .includes(query)
+    })
+  }, [customers, search])
+
+  const rows = useMemo(
+    // DataGrid expects a stable unique id per row.
+    () => filteredCustomers.map((customer, index) => ({ ...customer, id: `${customer.email}-${index}` })),
+    [filteredCustomers],
+  )
+
+  const handleExportCsv = () => {
+    const exportFields: Array<keyof Customer> = [
+      'firstname',
+      'lastname',
+      'streetaddress',
+      'postcode',
+      'city',
+      'email',
+      'phone',
+    ]
+
+    const escapeCsvValue = (value: string) => `"${value.replaceAll('"', '""')}"`
+
+    const headerRow = exportFields.join(',')
+    const dataRows = filteredCustomers.map((customer) =>
+      exportFields
+        .map((field) => {
+          const value = customer[field]
+          return escapeCsvValue(value == null ? '' : String(value))
+        })
+        .join(','),
+    )
+
+    const csvContent = [headerRow, ...dataRows].join('\n')
+    const csvBlob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' })
+    const csvUrl = window.URL.createObjectURL(csvBlob)
+    const link = document.createElement('a')
+    link.href = csvUrl
+    link.setAttribute('download', 'customers.csv')
+    document.body.appendChild(link)
+    link.click()
+    document.body.removeChild(link)
+    window.URL.revokeObjectURL(csvUrl)
+  }
+
+  const columns: GridColDef[] = [
+    { field: 'firstname', headerName: 'First Name', flex: 1, minWidth: 160 },
+    { field: 'lastname', headerName: 'Last Name', flex: 1, minWidth: 160 },
+    { field: 'email', headerName: 'Email', flex: 1.2, minWidth: 240 },
+    { field: 'phone', headerName: 'Phone', flex: 1, minWidth: 160 },
+    {
+      field: 'edit',
+      headerName: 'Edit',
+      sortable: false,
+      filterable: false,
+      align: 'center',
+      headerAlign: 'center',
+      width: 80,
+      flex: 0,
+      renderCell: (params: GridRenderCellParams) => <EditCustomer customer={params.row as Customer} handleUpdate={handleUpdate} />,
+    },
+    {
+      field: 'delete',
+      headerName: 'Delete',
+      sortable: false,
+      filterable: false,
+      align: 'center',
+      headerAlign: 'center',
+      width: 90,
+      flex: 0,
+      renderCell: (params: GridRenderCellParams) => (
+        <Tooltip title="Delete customer">
+          <IconButton
+            color="error"
+            size="small"
+            onClick={() => setDeleteUrl((params.row as Customer)._links?.self?.href ?? '')}
+          >
+            <DeleteIcon fontSize="small" />
+          </IconButton>
+        </Tooltip>
+      ),
+    },
+  ]
+
+  return (
+    <Box sx={{ maxWidth: 1200, mx: 'auto', width: '100%' }}>
+      <Box
+        sx={{
+          display: 'flex',
+          flexWrap: 'wrap',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          mb: 2,
+          gap: 2,
+        }}
+      >
+        <Typography variant="h6">Customer List</Typography>
+        <Stack direction="row" gap={1} flexWrap="wrap" justifyContent="flex-end">
+          <TextField
+            size="small"
+            label="Search customers"
+            value={search}
+            onChange={(event) => setSearch(event.target.value)}
+          />
+          <Tooltip title="Export visible customers to CSV">
+            <IconButton color="primary" onClick={handleExportCsv}>
+              <DownloadIcon />
+            </IconButton>
+          </Tooltip>
+          <AddCustomer handleAdd={handleAdd} />
+        </Stack>
+      </Box>
+
+      <Paper variant="outlined" sx={{ width: '100%', overflow: 'hidden' }}>
+        <DataGrid
+          rows={rows}
+          columns={columns}
+          autoHeight
+          disableRowSelectionOnClick
+          pageSizeOptions={[5, 10, 20]}
+          initialState={{
+            pagination: { paginationModel: { pageSize: 10, page: 0 } },
+            sorting: { sortModel: [{ field: 'firstname', sort: 'asc' }] },
+          }}
+        />
+      </Paper>
+      <ConfirmDialog
+        open={Boolean(deleteUrl)}
+        title="Delete customer?"
+        message="Are you sure you want to delete this customer?"
+        onCancel={() => setDeleteUrl('')}
+        onConfirm={() => {
+          handleDelete(deleteUrl)
+          setDeleteUrl('')
+        }}
+      />
+    </Box>
+  )
+}
+
+export default CustomerList

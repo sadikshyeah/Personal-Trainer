@@ -4,9 +4,9 @@ import dayjs from 'dayjs'
 import DeleteIcon from '@mui/icons-material/Delete'
 import { Box, IconButton, Paper, Stack, TextField, Tooltip, Typography } from '@mui/material'
 import { DataGrid, type GridColDef, type GridRenderCellParams } from '@mui/x-data-grid'
-import AddTraining from './AddTraining'
-import ConfirmDialog from './ConfirmDialog'
-import EditTraining from './EditTraining'
+import AddTraining from '../components/AddTraining'
+import ConfirmDialog from '../components/ConfirmDialog'
+import EditTraining from '../components/EditTraining'
 import type { Customer, NewTraining, Training } from '../types'
 
 type TrainingListProps = {
