@@ -92,9 +92,9 @@ function MotivationOfDay() {
   }, [apiKey, quote])
 
   return (
-    <Card variant="outlined" sx={{ mb: 2, borderRadius: 2 }}>
-      <CardContent>
-        <Typography variant="h6" sx={{ mb: 1 }}>
+    <Card variant="outlined" sx={{ maxWidth: 1200, mx: 'auto', width: '100%', mb: 1.5, borderRadius: 2 }}>
+      <CardContent sx={{ py: 1.5, px: 2 }}>
+        <Typography variant="h6" sx={{ mb: 0.75 }}>
           Motivation of the Day
         </Typography>
         {/* Show one of three UI states: loading, error, or the quote card. */}
