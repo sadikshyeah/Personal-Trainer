@@ -24,7 +24,7 @@ function TrainingCalendar({ trainings }: TrainingCalendarProps) {
   })
 
   return (
-    <Box>
+    <Box sx={{ maxWidth: 1200, mx: 'auto', width: '100%' }}>
       <Typography variant="h6" sx={{ mb: 2 }}>
         Training Calendar
       </Typography>
