@@ -1,5 +1,4 @@
 import { useEffect, useState, type ReactNode } from 'react'
-import './App.css'
 import CustomerList from './components/CustomerList'
 import MotivationOfDay from './components/MotivationOfDay'
 import TrainingCalendar from './components/TrainingCalendar'
@@ -16,7 +15,6 @@ import PeopleIcon from '@mui/icons-material/People'
 import AppBar from '@mui/material/AppBar'
 import Box from '@mui/material/Box'
 import Container from '@mui/material/Container'
-import CssBaseline from '@mui/material/CssBaseline'
 import Divider from '@mui/material/Divider'
 import Drawer from '@mui/material/Drawer'
 import IconButton from '@mui/material/IconButton'
@@ -25,6 +23,8 @@ import ListItem from '@mui/material/ListItem'
 import ListItemButton from '@mui/material/ListItemButton'
 import ListItemIcon from '@mui/material/ListItemIcon'
 import ListItemText from '@mui/material/ListItemText'
+import Paper from '@mui/material/Paper'
+import Stack from '@mui/material/Stack'
 import Toolbar from '@mui/material/Toolbar'
 import Typography from '@mui/material/Typography'
 
@@ -125,8 +125,7 @@ function App() {
 
   return (
     <>
-      <CssBaseline />
-      <AppBar position="static">
+      <AppBar position="static" color="primary">
         <Toolbar>
           <IconButton
             color="inherit"
@@ -146,7 +145,26 @@ function App() {
         {drawer}
       </Drawer>
 
-      <Container maxWidth="md" sx={{ mt: 4 }}>
+      <Container maxWidth={false} sx={{ mt: 2, px: { xs: 2, sm: 3 }, width: '100%' }}>
+        <Box sx={{ maxWidth: 1200, mx: 'auto', width: '100%', mb: 1.5 }}>
+          <Typography variant="h6" sx={{ mb: 0.75 }}>
+            Dashboard
+          </Typography>
+          <Stack direction={{ xs: 'column', sm: 'row' }} spacing={1.5}>
+            <Paper variant="outlined" sx={{ p: 1.5, flex: 1 }}>
+              <Typography variant="body2" color="text.secondary">
+                Total Customers
+              </Typography>
+              <Typography variant="h6">{customers.length}</Typography>
+            </Paper>
+            <Paper variant="outlined" sx={{ p: 1.5, flex: 1 }}>
+              <Typography variant="body2" color="text.secondary">
+                Total Trainings
+              </Typography>
+              <Typography variant="h6">{trainings.length}</Typography>
+            </Paper>
+          </Stack>
+        </Box>
         <MotivationOfDay />
         <Box>
           {activePage === 'customers' ? (
