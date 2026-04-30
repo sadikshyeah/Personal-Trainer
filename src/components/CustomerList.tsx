@@ -89,7 +89,8 @@ function CustomerList({ customers, handleAdd, handleDelete, handleUpdate }: Cust
             filterable: false,
             align: 'center',
             headerAlign: 'center',
-            minWidth: 80,
+            width: 80,
+            flex: 0,
             renderCell: (params: GridRenderCellParams) => <EditCustomer customer={params.row as Customer} handleUpdate={handleUpdate} />,
         },
         {
@@ -99,7 +100,8 @@ function CustomerList({ customers, handleAdd, handleDelete, handleUpdate }: Cust
             filterable: false,
             align: 'center',
             headerAlign: 'center',
-            minWidth: 90,
+            width: 90,
+            flex: 0,
             renderCell: (params: GridRenderCellParams) => (
                 <Tooltip title="Delete customer">
                     <IconButton
@@ -115,10 +117,19 @@ function CustomerList({ customers, handleAdd, handleDelete, handleUpdate }: Cust
     ]
 
     return (
-    <Box>
-      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2, gap: 2 }}>
+    <Box sx={{ maxWidth: 1200, mx: 'auto', width: '100%' }}>
+      <Box
+        sx={{
+          display: 'flex',
+          flexWrap: 'wrap',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          mb: 2,
+          gap: 2,
+        }}
+      >
         <Typography variant="h6">Customer List</Typography>
-        <Stack direction="row" gap={1}>
+        <Stack direction="row" gap={1} flexWrap="wrap" justifyContent="flex-end">
           <TextField
             size="small"
             label="Search customers"
@@ -134,7 +145,7 @@ function CustomerList({ customers, handleAdd, handleDelete, handleUpdate }: Cust
         </Stack>
       </Box>
 
-      <Paper variant="outlined" sx={{ width: '100%' }}>
+      <Paper variant="outlined" sx={{ width: '100%', overflow: 'hidden' }}>
         <DataGrid
           rows={rows}
           columns={columns}
