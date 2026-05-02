@@ -1,6 +1,7 @@
 import { useEffect, useState, type ReactNode } from 'react'
 import MotivationOfDay from './components/MotivationOfDay'
 import CustomerList from './pages/CustomerList'
+import Dashboard from './pages/Dashboard'
 import TrainingCalendar from './pages/TrainingCalendar'
 import TrainingList from './pages/TrainingList'
 import TrainingStatistics from './pages/TrainingStatistics'
@@ -8,12 +9,14 @@ import { addCustomer, deleteCustomer, fetchCustomers, updateCustomer } from './c
 import { addTraining, deleteTraining, fetchTrainings, updateTraining } from './trainingapi'
 import type { Customer, NewCustomer, NewTraining, Training } from './types'
 import BarChartIcon from '@mui/icons-material/BarChart'
+import DashboardIcon from '@mui/icons-material/Dashboard'
 import CalendarMonthIcon from '@mui/icons-material/CalendarMonth'
 import FitnessCenterIcon from '@mui/icons-material/FitnessCenter'
 import MenuIcon from '@mui/icons-material/Menu'
 import PeopleIcon from '@mui/icons-material/People'
 import AppBar from '@mui/material/AppBar'
 import Box from '@mui/material/Box'
+import ButtonBase from '@mui/material/ButtonBase'
 import Container from '@mui/material/Container'
 import Divider from '@mui/material/Divider'
 import Drawer from '@mui/material/Drawer'
@@ -23,17 +26,16 @@ import ListItem from '@mui/material/ListItem'
 import ListItemButton from '@mui/material/ListItemButton'
 import ListItemIcon from '@mui/material/ListItemIcon'
 import ListItemText from '@mui/material/ListItemText'
-import Paper from '@mui/material/Paper'
-import Stack from '@mui/material/Stack'
 import Toolbar from '@mui/material/Toolbar'
 import Typography from '@mui/material/Typography'
 
-type PageKey = 'customers' | 'trainings' | 'calendar' | 'statistics'
+type PageKey = 'dashboard' | 'customers' | 'trainings' | 'calendar' | 'statistics'
 
 //drawer handling
 const DRAWER_WIDTH = 260
 
 const NAV_ITEMS: { key: PageKey; label: string; icon: ReactNode }[] = [
+  { key: 'dashboard', label: 'Dashboard', icon: <DashboardIcon /> },
   { key: 'customers', label: 'Customers', icon: <PeopleIcon /> },
   { key: 'trainings', label: 'Trainings', icon: <FitnessCenterIcon /> },
   { key: 'calendar', label: 'Calendar', icon: <CalendarMonthIcon /> },
@@ -42,7 +44,7 @@ const NAV_ITEMS: { key: PageKey; label: string; icon: ReactNode }[] = [
 
 function App() {
   const [drawerOpen, setDrawerOpen] = useState(false)
-  const [activePage, setActivePage] = useState<PageKey>('customers')
+  const [activePage, setActivePage] = useState<PageKey>('dashboard')
   const [customers, setCustomers] = useState<Customer[]>([])
   const [trainings, setTrainings] = useState<Training[]>([])
 
@@ -135,9 +137,19 @@ function App() {
           >
             <MenuIcon />
           </IconButton>
-          <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
-            Personal Trainer
-          </Typography>
+          <ButtonBase
+            disableRipple
+            sx={{ flexGrow: 1, justifyContent: 'flex-start', color: 'inherit', textAlign: 'left' }}
+            aria-label="Go to home"
+            onClick={() => {
+              setActivePage('dashboard')
+              setDrawerOpen(false)
+            }}
+          >
+            <Typography variant="h6" component="span">
+              Personal Trainer
+            </Typography>
+          </ButtonBase>
         </Toolbar>
       </AppBar>
 
@@ -146,48 +158,35 @@ function App() {
       </Drawer>
 
       <Container maxWidth={false} sx={{ mt: 2, px: { xs: 2, sm: 3 }, width: '100%' }}>
-        <Box sx={{ maxWidth: 1200, mx: 'auto', width: '100%', mb: 1.5 }}>
-          <Typography variant="h6" sx={{ mb: 0.75 }}>
-            Dashboard
-          </Typography>
-          <Stack direction={{ xs: 'column', sm: 'row' }} spacing={1.5}>
-            <Paper variant="outlined" sx={{ p: 1.5, flex: 1 }}>
-              <Typography variant="body2" color="text.secondary">
-                Total Customers
-              </Typography>
-              <Typography variant="h6">{customers.length}</Typography>
-            </Paper>
-            <Paper variant="outlined" sx={{ p: 1.5, flex: 1 }}>
-              <Typography variant="body2" color="text.secondary">
-                Total Trainings
-              </Typography>
-              <Typography variant="h6">{trainings.length}</Typography>
-            </Paper>
-          </Stack>
-        </Box>
-        <MotivationOfDay />
-        <Box>
-          {activePage === 'customers' ? (
-            <CustomerList
-              customers={customers}
-              handleAdd={handleAddCustomer}
-              handleUpdate={handleUpdateCustomer}
-              handleDelete={handleDeleteCustomer}
-            />
-          ) : activePage === 'trainings' ? (
-            <TrainingList
-              trainings={trainings}
-              customers={customers}
-              handleAdd={handleAddTraining}
-              handleUpdate={handleUpdateTraining}
-              handleDelete={handleDeleteTraining}
-            />
-          ) : activePage === 'calendar' ? (
-            <TrainingCalendar trainings={trainings} />
-          ) : (
-            <TrainingStatistics trainings={trainings} />
-          )}
-        </Box>
+        {activePage === 'dashboard' ? (
+          <>
+            <MotivationOfDay />
+            <Dashboard customers={customers} trainings={trainings} />
+          </>
+        ) : (
+          <Box>
+            {activePage === 'customers' ? (
+              <CustomerList
+                customers={customers}
+                handleAdd={handleAddCustomer}
+                handleUpdate={handleUpdateCustomer}
+                handleDelete={handleDeleteCustomer}
+              />
+            ) : activePage === 'trainings' ? (
+              <TrainingList
+                trainings={trainings}
+                customers={customers}
+                handleAdd={handleAddTraining}
+                handleUpdate={handleUpdateTraining}
+                handleDelete={handleDeleteTraining}
+              />
+            ) : activePage === 'calendar' ? (
+              <TrainingCalendar trainings={trainings} />
+            ) : (
+              <TrainingStatistics trainings={trainings} />
+            )}
+          </Box>
+        )}
       </Container>
     </>
   )
